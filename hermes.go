@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"html/template"
 
-	"github.com/Masterminds/sprig"
-	"github.com/imdario/mergo"
+	"dario.cat/mergo"
+	"github.com/Masterminds/sprig/v3"
 	"github.com/jaytaylor/html2text"
 	"github.com/russross/blackfriday/v2"
 	"github.com/vanng822/go-premailer/premailer"
@@ -76,7 +76,7 @@ type Body struct {
 
 // ToHTML converts Markdown to HTML
 func (c Markdown) ToHTML() template.HTML {
-	return template.HTML(blackfriday.Run([]byte(string(c))))
+	return template.HTML(blackfriday.Run([]byte(c)))
 }
 
 // Entry is a simple entry of a map
@@ -178,11 +178,11 @@ func (h *Hermes) GeneratePlainText(email Email) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	template, err := h.generateTemplate(email, h.Theme.PlainTextTemplate())
+	tmpl, err := h.generateTemplate(email, h.Theme.PlainTextTemplate())
 	if err != nil {
 		return "", err
 	}
-	return html2text.FromString(template, html2text.Options{PrettyTables: true})
+	return html2text.FromString(tmpl, html2text.Options{PrettyTables: true})
 }
 
 func (h *Hermes) generateTemplate(email Email, tplt string) (string, error) {
