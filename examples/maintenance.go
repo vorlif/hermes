@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/matcornic/hermes/v2"
+	"github.com/vorlif/hermes"
 )
 
 type maintenance struct {

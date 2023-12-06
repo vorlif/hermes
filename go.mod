@@ -1,4 +1,4 @@
-module github.com/matcornic/hermes/v2
+module github.com/vorlif/hermes
 
 go 1.21
 
