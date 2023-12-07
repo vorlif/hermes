@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"html/template"
 
-	"dario.cat/mergo"
 	"github.com/Masterminds/sprig/v3"
 	"github.com/jaytaylor/html2text"
 	"github.com/russross/blackfriday/v2"
@@ -121,63 +120,40 @@ type Template struct {
 	Email  Email
 }
 
-func setDefaultEmailValues(e *Email) error {
-	// Default values of an email
-	defaultEmail := Email{
-		Body: Body{
-			Intros:     []string{},
-			Dictionary: []Entry{},
-			Outros:     []string{},
-			Signature:  "Yours truly",
-			Greeting:   "Hi",
-		},
+func setDefaultEmailValues(e *Email) {
+	if e.Body.Intros == nil {
+		e.Body.Intros = []string{}
 	}
-	// Merge the given email with default one
-	// Default one overrides all zero values
-	return mergo.Merge(e, defaultEmail)
+	if e.Body.Dictionary == nil {
+		e.Body.Dictionary = []Entry{}
+	}
+	if e.Body.Outros == nil {
+		e.Body.Outros = []string{}
+	}
 }
 
 // default values of the engine
-func setDefaultHermesValues(h *Hermes) error {
-	defaultTextDirection := TDLeftToRight
-	defaultHermes := Hermes{
-		Theme:         new(Default),
-		TextDirection: defaultTextDirection,
-		Product: Product{
-			Name:        "Hermes",
-			Copyright:   "Copyright © 2020 Hermes. All rights reserved.",
-			TroubleText: "If you’re having trouble with the button '{ACTION}', copy and paste the URL below into your web browser.",
-		},
+func setDefaultHermesValues(h *Hermes) {
+	if h.Theme == nil {
+		h.Theme = new(Default)
 	}
-	// Merge the given hermes engine configuration with default one
-	// Default one overrides all zero values
-	err := mergo.Merge(h, defaultHermes)
-	if err != nil {
-		return err
-	}
+
 	if h.TextDirection != TDLeftToRight && h.TextDirection != TDRightToLeft {
-		h.TextDirection = defaultTextDirection
+		h.TextDirection = TDLeftToRight
 	}
-	return nil
 }
 
 // GenerateHTML generates the email body from data to an HTML Reader
 // This is for modern email clients
 func (h *Hermes) GenerateHTML(email Email) (string, error) {
-	err := setDefaultHermesValues(h)
-	if err != nil {
-		return "", err
-	}
+	setDefaultHermesValues(h)
 	return h.generateTemplate(email, h.Theme.HTMLTemplate())
 }
 
 // GeneratePlainText generates the email body from data
 // This is for old email clients
 func (h *Hermes) GeneratePlainText(email Email) (string, error) {
-	err := setDefaultHermesValues(h)
-	if err != nil {
-		return "", err
-	}
+	setDefaultHermesValues(h)
 	tmpl, err := h.generateTemplate(email, h.Theme.PlainTextTemplate())
 	if err != nil {
 		return "", err
@@ -186,11 +162,7 @@ func (h *Hermes) GeneratePlainText(email Email) (string, error) {
 }
 
 func (h *Hermes) generateTemplate(email Email, tplt string) (string, error) {
-
-	err := setDefaultEmailValues(&email)
-	if err != nil {
-		return "", err
-	}
+	setDefaultEmailValues(&email)
 
 	// Generate the email from Golang template
 	// Allow usage of simple function from sprig : https://github.com/Masterminds/sprig

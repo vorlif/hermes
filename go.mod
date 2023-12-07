@@ -3,7 +3,6 @@ module github.com/vorlif/hermes
 go 1.21
 
 require (
-	dario.cat/mergo v1.0.0
 	github.com/Masterminds/sprig/v3 v3.2.3
 	github.com/jaytaylor/html2text v0.0.0-20230321000545-74c2419ad056
 	github.com/russross/blackfriday/v2 v2.1.0
